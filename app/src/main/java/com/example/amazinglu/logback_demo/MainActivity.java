@@ -3,6 +3,11 @@ package com.example.amazinglu.logback_demo;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.amazinglu.logback_demo.model.Data;
+import com.example.amazinglu.logback_demo.util.ModelUtil;
+import com.google.gson.reflect.TypeToken;
+
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
@@ -69,8 +74,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        logger.info("Main Activity start");
-        logger.info("Main Activity start again");
+//        logger.info("Main Activity start");
+//        logger.info("Main Activity start again");
+
+        logger.info("{}", generateLogRecord("Main Activity start"));
+        logger.info("{}", generateLogRecord("Main Activity start again"));
 
         /**
          * read record in myApp.txt in a line
@@ -92,11 +100,26 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        List<Data> dataList = getDataList(logRecords);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         logger.info("Main Activity end");
+    }
+
+    private String generateLogRecord(String msg) {
+        Data data = new Data(msg);
+        return ModelUtil.toJson(data);
+    }
+
+    private List<Data> getDataList(List<String> dataStr) {
+        List<Data> dataList = new ArrayList<>();
+        for (String dataJson : dataStr) {
+            dataList.add(ModelUtil.toObject(dataJson, new TypeToken<Data>(){}));
+        }
+        return dataList;
     }
 }
